@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        .node {
+            cursor: pointer;
+        }
+        .node text {
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            display: block;
+        }
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div id="graph"></div>
+    <script>
+        const width = 1000, height = 800;
+        const svg = d3.select("#graph").append("svg").attr("width", width).attr("height", height);
+        
+        const data = {
+            nodes: [
+                { id: "center", name: "Maria Cuellar's Research" },
+                { id: "forensic", name: "Forensic Science" },
+                { id: "criminal", name: "Criminal Justice and Public Health" },
+                { id: "contextual", name: "Contextual Bias" },
+                { id: "statistical", name: "Statistical Reviews" },
+                { id: "methods", name: "Development of New Methods" },
+                { id: "1", name: "Firearms comparisons black-box studies" },
+                { id: "2", name: "An algorithm for toolmark comparisons" },
+                { id: "3", name: "Incorrect statistical reasoning in Guyll et al." },
+                { id: "5", name: "Formalization of contextual bias" },
+                { id: "6", name: "Human vs. machine performance in firearm comparisons" },
+                { id: "7", name: "Re-examining crime concentration" },
+                { id: "8", name: "Overdose awareness program" },
+                { id: "14", name: "Causal problems with SBS/AHT" },
+                { id: "27", name: "Hierarchical model for forensic toolmarks" },
+                { id: "31", name: "Fingerprint comparisons studies" }
+            ],
+            links: [
+                { source: "center", target: "forensic" },
+                { source: "center", target: "criminal" },
+                { source: "center", target: "contextual" },
+                { source: "center", target: "statistical" },
+                { source: "center", target: "methods" },
+                { source: "forensic", target: "1" },
+                { source: "forensic", target: "2" },
+                { source: "statistical", target: "3" },
+                { source: "contextual", target: "5" },
+                { source: "methods", target: "6" },
+                { source: "criminal", target: "7" },
+                { source: "criminal", target: "8" },
+                { source: "statistical", target: "14" },
+                { source: "methods", target: "27" },
+                { source: "forensic", target: "31" }
+            ]
+        };
+        
+        const simulation = d3.forceSimulation(data.nodes)
+            .force("link", d3.forceLink(data.links).id(d => d.id).distance(120))
+            .force("charge", d3.forceManyBody().strength(-400))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(50));
+        
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(data.links)
+            .enter().append("line")
+            .attr("class", "link");
+        
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(data.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+        
+        node.append("circle")
+            .attr("r", 10)
+            .attr("fill", "#1f77b4");
+        
+        node.append("text")
+            .text(d => d.name)
+            .attr("x", 15)
+            .attr("y", 5)
+            .style("font-weight", "normal");
+        
+        simulation.on("tick", () => {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+            
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+        
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    </script>
+</body>
+</html>
