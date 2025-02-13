@@ -19,12 +19,14 @@
             text-decoration: none;
             cursor: default;
         }
+
 .black-text {
     fill: black !important;  /* Forces black text */
     text-decoration: none;
     cursor: default !important;  /* Makes it look non-clickable */
     pointer-events: none;  /* Completely disables interaction */
 }
+
         .link {
             stroke: #999;
             stroke-opacity: 0.6;
@@ -179,12 +181,12 @@ node.append("text")
     .attr("y", 5)
     .attr("class", d => {
         let classes = [];
-        if (["criminal4", "methods3", "methods4"].includes(d.id)) classes.push("black-text");
+        if (["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id)) classes.push("black-text");
         if (d.color === "#ff7f0e") classes.push("orange");
         return classes.join(" "); // Ensures multiple classes are preserved
     })
     .on("click", (event, d) => {
-        if (d.url && !["criminal4", "methods3", "methods4"].includes(d.id) && d.color !== "#ff7f0e") {
+        if (d.url && !["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id) && d.color !== "#ff7f0e") {
             window.open(d.url, "_blank");
         }
     })
