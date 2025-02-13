@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        .node {
+            cursor: pointer;
+        }
+        .node text {
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            display: block;
+            fill: blue;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .node text.orange {
+            fill: black;
+            text-decoration: none;
+            cursor: default;
+        }
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div id="graph"></div>
+    <script>
+        const width = 1500, height = 1500;
+        const svg = d3.select("#graph").append("svg").attr("width", width).attr("height", height);
+        
+function wrapText(text, width) {
+    text.each(function() {
+        const text = d3.select(this);
+        const words = text.text().split(/\s+/).reverse();
+        let word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.2, // ems
+            y = text.attr("y"),
+            dy = 0,
+            tspan = text.text(null).append("tspan").attr("x", 15).attr("y", y).attr("dy", dy + "em");
+
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                            .attr("x", 15)
+                            .attr("y", y)
+                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                            .text(word);
+            }
+        }
+    });
+}
+
+        const data = {
+            nodes: [
+                { id: "center", name: "Maria Cuellar's Research", size: 20, color: "#ff7f0e" },
+                { id: "causal", name: "Causal Inference in the Law", color: "#ff7f0e" },
+                { id: "forensic", name: "Forensic Science", color: "#ff7f0e" },
+                { id: "criminal", name: "Criminal Justice and Public Health", color: "#ff7f0e" },
+                { id: "forensic_stats", name: "Forensic Statistics", color: "#ff7f0e" },
+                { id: "statistical", name: "Statistical Reviews", color: "#ff7f0e" },
+                { id: "forensic_methods", name: "Development of Methods", color: "#ff7f0e" },
+                { id: "contextual", name: "Contextual Bias", color: "#ff7f0e" },
+                { id: "causal1", name: "Causes of Effects", url: "https://link.springer.com/chapter/10.1007/978-3-030-75460-0_12" },
+                { id: "causal2", name: "Estimator for Causation", url: "https://rss.onlinelibrary.wiley.com/doi/10.1111/rssa.12548" },
+                { id: "causal3", name: "Mediated Probabilities", url: "https://arxiv.org/abs/2404.07397" },
+                { id: "causal4", name: "Causal Problems in SBS", url: "https://academic.oup.com/lpr/article/16/4/223/4557531?login=true" },
+                { id: "causal5", name: "Pretrial Public Safety", url: "https://academic.oup.com/jrsssa/article/186/2/190/7036017?login=false" },
+		{ id: "criminal1", name: "Trends in self-reporting", url: "https://www.tandfonline.com/doi/full/10.1080/2330443X.2018.1513346"},
+		{ id: "criminal2", name: "Law of crime concentration", url: "https://journals.sagepub.com/doi/abs/10.1177/0022427820984213?journalCode=jrca"},
+		{ id: "criminal3", name: "Overdose awareness", url: "https://pubmed.ncbi.nlm.nih.gov/32662281/"},
+		{ id: "criminal4", name: "Covid lockdowns on crime"},
+		{ id: "contextual1", name: "Human vs. machine", url: "https://www.sciencedirect.com/science/article/pii/S2589871X22000687"},
+		{ id: "contextual2", name: "Formalization of contextual bias", url: "https://academic.oup.com/jrsssa/article/185/Supplement_2/S620/7069513"},
+		{ id: "forensic_stats1", name: "Risks of exclusions", url: "https://arxiv.org/abs/2412.05398"},
+		{ id: "forensic_stats2", name: "Prosecutor's fallacy", url: "https://arxiv.org/abs/2502.03217"},
+		{ id: "forensic_stats3", name: "Fingerprints birthday paradox", url: "https://arxiv.org/abs/2412.13135"},
+		{ id: "forensic_stats4", name: "Guyll et al. reasoning", url: "https://www.pnas.org/doi/10.1073/pnas.2315431121"},
+		{ id: "forensic_stats5", name: "Guyll et al. reasoning 2", url: "https://academic.oup.com/lpr/article/23/1/mgad010/7513561"},
+		{ id: "forensic_stats6", name: "Reliability and validity", url: "https://academic.oup.com/jrssig/article/16/2/21/7029352?login=false"},
+		{ id: "forensic_stats7", name: "What does a match mean?", url: "https://academic.oup.com/jrssig/article/16/2/25/7029523"},
+		{ id: "forensic_stats8", name: "Association and discrimination", url: "https://www.taylorfrancis.com/chapters/edit/10.1201/9780367527709-6/association-imply-discrimination-clarifying-matches-meaningful-maria-cuellar-lucas-mentch-cliff-spiegelman"},
+		{ id: "forensic_methods1", name: "Toolmark algorithm", url: "https://www.sciencedirect.com/science/article/pii/S2589871X24000901"},
+		{ id: "forensic_methods2", name: "Blind testing", url: "https://www.sciencedirect.com/science/article/pii/S2589871X20300577"},
+		{ id: "forensic_methods3", name: "3D toolmarks data", url: ""},
+		{ id: "forensic_methods4", name: "Toolmark modeling", url: ""}
+
+            ],
+            links: [
+                { source: "center", target: "causal" },
+                { source: "causal", target: "causal1" },
+                { source: "causal", target: "causal2" },
+                { source: "causal", target: "causal3" },
+                { source: "causal", target: "causal4" },
+                { source: "causal", target: "causal5" },
+                { source: "center", target: "criminal" },
+                { source: "criminal", target: "criminal1" },
+                { source: "criminal", target: "criminal2" },
+                { source: "criminal", target: "criminal3" },
+                { source: "criminal", target: "criminal4" },
+                { source: "center", target: "forensic" },
+                { source: "forensic", target: "forensic_stats" },
+                { source: "forensic_stats", target: "forensic_stats1" },
+                { source: "forensic_stats", target: "forensic_stats2" },
+                { source: "forensic_stats", target: "forensic_stats3" },
+                { source: "forensic_stats", target: "forensic_stats4" },
+                { source: "forensic_stats", target: "forensic_stats5" },
+                { source: "forensic_stats", target: "forensic_stats6" },
+                { source: "forensic_stats", target: "forensic_stats7" },
+                { source: "forensic_stats", target: "forensic_stats8" },
+                { source: "forensic_methods", target: "forensic_methods1" },
+                { source: "forensic_methods", target: "forensic_methods2" },
+                { source: "forensic_methods", target: "forensic_methods3" },
+                { source: "forensic_methods", target: "forensic_methods4" },
+                { source: "forensic", target: "statistical" },
+                { source: "forensic", target: "methods" },
+                { source: "statistical", target: "contextual" },
+		{ source: "contextual", target: "contextual1" },
+		{ source: "contextual", target: "contextual2" }
+
+            ]
+        };
+        
+	const simulation = d3.forceSimulation(data.nodes)
+    	    .force("link", d3.forceLink(data.links).id(d => d.id).distance(120))  // Reduced distance
+            .force("charge", d3.forceManyBody().strength(-500))  // Less repulsion
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(50));  // Closer nodes
+
+
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(data.links)
+            .enter().append("line")
+            .attr("class", "link");
+        
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(data.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+        
+        node.append("circle")
+            .attr("r", d => d.size || 10)
+            .attr("fill", d => d.color || "#1f77b4");
+        
+        node.append("text")
+            .text(d => d.name)
+            .attr("x", 15)
+            .attr("y", 5)
+            .each(function() { wrapText(d3.select(this), 80); })
+            .attr("class", d => d.color === "#ff7f0e" ? "orange" : "")
+            .on("click", (event, d) => {
+                if (d.url && d.color !== "#ff7f0e") {
+                    window.open(d.url, "_blank");
+                }
+            });
+        
+        simulation.on("tick", () => {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+            
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+        
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    </script>
+</body>
+</html>

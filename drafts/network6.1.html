@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        .node {
+            cursor: pointer;
+        }
+        .node text {
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            display: block;
+            fill: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .node text.orange {
+            fill: black;
+            text-decoration: none;
+            cursor: default;
+        }
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div id="graph"></div>
+    <script>
+        const width = 1000, height = 800;
+        const svg = d3.select("#graph").append("svg").attr("width", width).attr("height", height);
+        
+        const data = {
+            nodes: [
+                { id: "center", name: "Maria Cuellar's Research", size: 20, color: "#ff7f0e" },
+                { id: "causal", name: "Causal Inference in the Law", color: "#ff7f0e" },
+                { id: "forensic", name: "Forensic Science", color: "#ff7f0e" },
+                { id: "criminal", name: "Criminal Justice and Public Health", color: "#ff7f0e" },
+                { id: "forensic_stats", name: "Forensic Statistics", color: "#ff7f0e" },
+                { id: "statistical", name: "Statistical Reviews", color: "#ff7f0e" },
+                { id: "methods", name: "Development of Methods", color: "#ff7f0e" },
+                { id: "contextual", name: "Contextual Bias", color: "#ff7f0e" },
+                { id: "causal1", name: "Causes of Effects", url: "https://link.springer.com/chapter/10.1007/978-3-030-75460-0_12" },
+                { id: "causal2", name: "Estimator for Causation", url: "https://rss.onlinelibrary.wiley.com/doi/10.1111/rssa.12548" },
+                { id: "causal3", name: "Mediated Probabilities", url: "https://arxiv.org/abs/2404.07397" },
+                { id: "causal4", name: "Causal Problems in SBS", url: "https://academic.oup.com/lpr/article/16/4/223/4557531?login=true" },
+                { id: "causal5", name: "Pretrial Public Safety", url: "https://academic.oup.com/jrsssa/article/186/2/190/7036017?login=false" }
+                { id: "criminal1", name: "Trends in self-reporting of marijuana consumption in the US", url: "https://www.tandfonline.com/doi/full/10.1080/2330443X.2018.1513346" },
+                { id: "criminal2", name: "Re-examining the law of crime concentration", url: "https://journals.sagepub.com/doi/abs/10.1177/0022427820984213?journalCode=jrca" },
+                { id: "criminal3", name: "Evaluation of an overdose awareness program in Philadelphia libraries", url: "https://pubmed.ncbi.nlm.nih.gov/32662281/" },
+                { id: "criminal4", name: ""The eﬀect of Covid-19 lockdowns on crime in Bogota, Colombia", url: "" },
+
+            ],
+            links: [
+                { source: "center", target: "causal" },
+                { source: "center", target: "forensic" },
+                { source: "center", target: "criminal" },
+                { source: "forensic", target: "forensic_stats" },
+                { source: "forensic", target: "statistical" },
+                { source: "forensic", target: "methods" },
+                { source: "statistical", target: "contextual" },
+                { source: "causal", target: "causal1" },
+                { source: "causal", target: "causal2" },
+                { source: "causal", target: "causal3" },
+                { source: "causal", target: "causal4" },
+                { source: "causal", target: "causal5" },
+                { source: "criminal", target: "criminal1" },
+                { source: "criminal", target: "criminal2" },
+                { source: "criminal", target: "criminal3" },
+                { source: "criminal", target: "criminal4" }
+            ]
+        };
+        
+        const simulation = d3.forceSimulation(data.nodes)
+            .force("link", d3.forceLink(data.links).id(d => d.id).distance(120))
+            .force("charge", d3.forceManyBody().strength(-400))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(50));
+        
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(data.links)
+            .enter().append("line")
+            .attr("class", "link");
+        
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(data.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+        
+        node.append("circle")
+            .attr("r", d => d.size || 10)
+            .attr("fill", d => d.color || "#1f77b4");
+        
+        node.append("text")
+            .text(d => d.name)
+            .attr("x", 15)
+            .attr("y", 5)
+            .attr("class", d => d.color === "#ff7f0e" ? "orange" : "")
+            .on("click", (event, d) => {
+                if (d.url && d.color !== "#ff7f0e") {
+                    window.open(d.url, "_blank");
+                }
+            });
+        
+        simulation.on("tick", () => {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+            
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+        
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    </script>
+</body>
+</html>

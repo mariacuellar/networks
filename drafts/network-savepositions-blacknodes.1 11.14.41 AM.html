@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        .node {
+            cursor: pointer;
+        }
+        .node text {
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            display: block;
+            fill: blue;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .node text.orange {
+            fill: black;
+            text-decoration: none;
+            cursor: default;
+        }
+.black-text {
+    fill: black !important;  /* Forces black text */
+    text-decoration: none;
+    cursor: default !important;  /* Makes it look non-clickable */
+    pointer-events: none;  /* Completely disables interaction */
+}
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div id="graph"></div>
+    <script>
+        const width = 1000, height = 1100;
+        const svg = d3.select("#graph").append("svg").attr("width", width).attr("height", height);
+        
+function wrapText(text, width) {
+    text.each(function() {
+        const text = d3.select(this);
+        const words = text.text().split(/\s+/).reverse();
+        let word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.2, // ems
+            y = text.attr("y"),
+            dy = 0,
+            tspan = text.text(null).append("tspan").attr("x", 15).attr("y", y).attr("dy", dy + "em");
+
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                            .attr("x", 15)
+                            .attr("y", y)
+                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                            .text(word);
+            }
+        }
+    });
+}
+
+        const data = {
+            nodes: [
+	{"id":"center","name":"Maria Cuellar's Research","size":20,"color":"#ff7f0e","index":0,"x":743.8322414684274,"y":516.499979880182,"vy":-0.0014931640572415441,"vx":0.0003557728360636476,"fx":null,"fy":null},
+	{"id":"causal","name":"Causal Inference in the Law","color":"#ff7f0e","index":1,"x":559.5808609093826,"y":327.0159492647304,"vy":-0.001757167088093106,"vx":0.0029620178851670004},
+	{"id":"forensic","name":"Forensic Science","color":"#ff7f0e","index":2,"x":778.9783546376691,"y":868.257275800595,"vy":-0.0008181431603066045,"vx":-0.0011999969873185488},
+	{"id":"criminal","name":"Criminal Justice and Public Health", "color":"#ff7f0e","index":3,"x":905.6696688485551,"y":337.7440830913089,"vy":-0.002011040904804706,"vx":-0.00036323611263233186,"fx":null,"fy":null},
+	{"id":"forensic_stats","name":"Forensic Statistics","color":"#ff7f0e","index":4,"x":468.87012408604903,"y":920.0520821947662,"vy":0.0027400094067020746,"vx":0.002944868012271796,"fx":null,"fy":null},
+	{"id":"forensic_reviews","name":"Critiques of current practice","color":"#ff7f0e","index":5,"x":1073.0720173493414,"y":910.1803488336475,"vy":-0.000994118299456889,"vx":-0.0035730317808512456},
+	{"id":"forensic_methods","name":"New Methods","color":"#ff7f0e","index":6,"x":837.7234051117274,"y":1158.965044145954,"vy":-0.0010845489374448505,"vx":-0.0013271223760159667},
+	{"id":"causal1","name":"Causes of Effects","url":"https://link.springer.com/chapter/10.1007/978-3-030-75460-0_12","index":7,"x":499.6146866991953,"y":195.78776520594758,"vy":-0.0027232464050033,"vx":0.004429936108365416},
+	{"id":"causal2","name":"Estimator for Causation","url":"https://rss.onlinelibrary.wiley.com/doi/10.1111/rssa.12548","index":8,"x":425.57325912181096,"y":361.2224870653075,"vy":-0.0027083887054683564,"vx":0.002636990925323882},
+	{"id":"causal3","name":"Mediated Probabilities","url":"https://arxiv.org/abs/2404.07397","index":9,"x":448.4237809273768,"y":233.33882249953518,"vy":-0.003040345199066636,"vx":0.0038756707220077204},	
+	{"id":"causal4","name":"Causal Problems in SBS","url":"https://academic.oup.com/lpr/article/16/4/223/4557531?login=true","index":10,"x":569.694552482,"y":186.7450322131724,"vy":-0.0016265164621728989,"vx":0.0048829576210443594},
+	{"id":"causal5","name":"Pretrial Public Safety","url":"https://academic.oup.com/jrsssa/article/186/2/190/7036017?login=false","index":11,"x":420.31539490325815,"y":289.4575869493974,"vy":-0.0029631701509254963,"vx":0.003338828369126155},
+	{"id":"criminal1","name":"Trends in self-reporting","url":"https://www.tandfonline.com/doi/full/10.1080/2330443X.2018.1513346","index":12,"x":1043.9574784250667,"y":315.61783780483887,"vy":-0.00047392492101071916,"vx":-0.00003432436057275608},
+	{"id":"criminal2","name":"Law of crime concentration","url":"https://journals.sagepub.com/doi/abs/10.1177/0022427820984213?journalCode=jrca","index":13,"x":951.7515845431031,"y":203.142522851665,"vy":-0.001767055081572675,"vx":0.0015997512797604411},
+	{"id":"criminal3","name":"Overdose awareness","url":"https://pubmed.ncbi.nlm.nih.gov/32662281/","index":14,"x":1013.1863611806841,"y":243.47297429068013,"vy":-0.0008464297249700842,"vx":0.000841393047502599},
+	{"id":"criminal4","name":"Covid lockdowns on crime","index":15,"x":872.0510455024894,"y":204.32525253530423,"vy":-0.0028969876636334058,"vx":0.0018731544087609772},
+	{"id":"forensic_stats1","name":"Risks of exclusions","url":"https://arxiv.org/abs/2412.05398","index":16,"x":490.0170439346773,"y":1053.257270643954,"vy":0.004818005271498797,"vx":-0.004470948238485577},
+	{"id":"forensic_stats2","name":"Prosecutor's fallacy","url":"https://arxiv.org/abs/2502.03217","index":17,"x":325.9503286220691,"y":955.110564002398,"vy":-0.0008154319748202857,"vx":0.0016779176482585219},
+	{"id":"forensic_stats3","name":"Fingerprints birthday paradox","url":"https://arxiv.org/abs/2412.13135","index":18,"x":511.4291809435833,"y":799.3293306316423,"vy":-0.001584767594136881,"vx":-0.007374028658046573},
+	{"id":"forensic_stats4","name":"Guyll et al. reasoning","url":"https://www.pnas.org/doi/10.1073/pnas.2315431121","index":19,"x":409.0777756869524,"y":1049.3176267058777,"vy":0.0006214917127170938,"vx":-0.003442415853280766},
+	{"id":"forensic_stats5","name":"Guyll et al. reasoning 2","url":"https://academic.oup.com/lpr/article/23/1/mgad010/7513561","index":20,"x":326.4300282906196,"y":885.8602124349655,"vy":0.0028085393285550925,"vx":0.0026658567056942178},{"id":"forensic_stats6","name":"Reliability and validity","url":"https://academic.oup.com/jrssig/article/16/2/21/7029352?login=false","index":21,"x":587.5078605464813,"y":950.781032531937,"vy":0.0062782910438328576,"vx":0.001884675184437984},
+	{"id":"forensic_stats7","name":"What does a match mean?","url":"https://academic.oup.com/jrssig/article/16/2/25/7029523","index":22,"x":356.0737823514614,"y":1012.4989002462576,"vy":-0.0012410812028719053,"vx":-0.0008814359216518874},
+	{"id":"forensic_stats8","name":"Association and discrimination","url":"https://www.taylorfrancis.com/chapters/edit/10.1201/9780367527709-6/association-imply-discrimination-clarifying-matches-meaningful-maria-cuellar-lucas-mentch-cliff-spiegelman","index":23,"x":384.3318358680239,"y":808.4984496457851,"vy":0.007361279137767002,"vx":-0.00466587316104098},
+	{"id":"forensic_methods1","name":"Toolmark algorithm","url":"https://www.sciencedirect.com/science/article/pii/S2589871X24000901","index":24,"x":886.8974717065256,"y":1296.5541262641034,"vy":-0.0012539034912379462,"vx":0.00021481434210000072},
+	{"id":"forensic_methods2","name":"Blind testing","url":"https://www.sciencedirect.com/science/article/pii/S2589871X20300577","index":25,"x":756.8241648899078,"y":1274.567849890681,"vy":0.00002623048254916508,"vx":-0.0003877748962538341},
+	{"id":"forensic_methods3","name":"3D toolmarks data","url":"","index":26,"x":943.6861820195886,"y":1255.5556084084344,"vy":-0.0023309499221984987,"vx":-0.00020804312410068019},
+	{"id":"forensic_methods4","name":"Toolmark modeling","url":"","index":27,"x":821.5384070011464,"y":1303.8420326048565,"vy":-0.0007972245495660357,"vx":0.00009811712250659619},
+	{"id":"forensic_reviews1","name":"Shaken Baby Syndrome","url":"https://arxiv.org/abs/2412.10648","index":28,"x":1221.3398289093136,"y":908.178330439847,"vy":-0.001106436433332206,"vx":-0.003235334088575567},
+	{"id":"forensic_reviews2","name":"Firearms black-box studies","url":"https://academic.oup.com/lpr/article/23/1/mgae015/7917599?searchresult=1&login=false","index":29,"x":1173.934060959685,"y":1014.70453224729,"vy":-0.0009957339337459028,"vx":-0.003419030431770038},{"id":"forensic_reviews3","name":"Public beliefs","url":"https://pubmed.ncbi.nlm.nih.gov/32381243/","index":30,"x":1158.0556576620365,"y":800.7539051603869,"vy":-0.0013204737955335268,"vx":-0.00400900492667362},	
+	{"id":"forensic_reviews4","name":"Blind testing toxicology","url":"https://pubmed.ncbi.nlm.nih.gov/31424073/","index":31,"x":1210.593021162951,"y":967.2058939850334,"vy":-0.0011190085942023986,"vx":-0.00357875555857756},
+	{"id":"forensic_reviews5","name":"Human vs. machine","url":"https://www.sciencedirect.com/science/article/pii/S2589871X22000687","index":32,"x":1118.54923681637,"y":1041.8210665935055,"vy":-0.0012085436735522767,"vx":-0.002587782443640379},
+	{"id":"forensic_reviews6","name":"Formalization of contextual bias","url":"https://academic.oup.com/jrsssa/article/185/Supplement_2/S620/7069513","index":33,"x":1205.4571009306637,"y":850.3208798461203,"vy":-0.0010191343529690736,"vx":-0.003740085108059007}
+
+            ],
+            links: [
+                { source: "center", target: "causal" },
+                { source: "causal", target: "causal1" },
+                { source: "causal", target: "causal2" },
+                { source: "causal", target: "causal3" },
+                { source: "causal", target: "causal4" },
+                { source: "causal", target: "causal5" },
+                { source: "center", target: "criminal" },
+                { source: "criminal", target: "criminal1" },
+                { source: "criminal", target: "criminal2" },
+                { source: "criminal", target: "criminal3" },
+                { source: "criminal", target: "criminal4" },
+                { source: "center", target: "forensic" },
+                { source: "forensic", target: "forensic_stats" },
+                { source: "forensic_stats", target: "forensic_stats1" },
+                { source: "forensic_stats", target: "forensic_stats2" },
+                { source: "forensic_stats", target: "forensic_stats3" },
+                { source: "forensic_stats", target: "forensic_stats4" },
+                { source: "forensic_stats", target: "forensic_stats5" },
+                { source: "forensic_stats", target: "forensic_stats6" },
+                { source: "forensic_stats", target: "forensic_stats7" },
+                { source: "forensic_stats", target: "forensic_stats8" },
+                { source: "forensic", target: "forensic_methods" },
+                { source: "forensic_methods", target: "forensic_methods1" },
+                { source: "forensic_methods", target: "forensic_methods2" },
+                { source: "forensic_methods", target: "forensic_methods3" },
+                { source: "forensic_methods", target: "forensic_methods4" },
+                { source: "forensic", target: "forensic_reviews" },
+                { source: "forensic_reviews", target: "forensic_reviews1" },
+                { source: "forensic_reviews", target: "forensic_reviews2" },
+                { source: "forensic_reviews", target: "forensic_reviews3" },
+                { source: "forensic_reviews", target: "forensic_reviews4" },
+                { source: "forensic_reviews", target: "forensic_reviews5" },
+                { source: "forensic_reviews", target: "forensic_reviews6" }
+
+            ]
+        };
+        
+
+	const simulation = d3.forceSimulation(data.nodes)
+    	    .force("link", d3.forceLink(data.links).id(d => d.id).distance(120))
+	    .force("charge", d3.forceManyBody().strength(d => d.color === "#ff7f0e" ? -50 : -400)) // Less repulsion for orange nodes
+    	    .force("center", d3.forceCenter(width / 2, height / 2))
+    	    .force("collision", d3.forceCollide().radius(30));
+
+
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(data.links)
+            .enter().append("line")
+            .attr("class", "link");
+        
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(data.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+        
+        node.append("circle")
+            .attr("r", d => d.size || 10)
+            .attr("fill", d => d.color || "#1f77b4");
+        
+node.append("text")
+    .text(d => d.name)
+    .attr("x", 15)
+    .attr("y", 5)
+    .attr("class", d => {
+        console.log("ID:", d.id, "| Assigned Class:", 
+            ["criminal4", "methods3", "methods4"].includes(d.id) ? "black-text" : 
+            d.color === "#ff7f0e" ? "orange" : "");
+        return ["criminal4", "methods3", "methods4"].includes(d.id) ? "black-text" : 
+               d.color === "#ff7f0e" ? "orange" : "";
+    })
+    .on("click", (event, d) => {
+        if (d.url && !["criminal4", "methods3", "methods4"].includes(d.id) && d.color !== "#ff7f0e") {
+            window.open(d.url, "_blank");
+        }
+    })
+    .each(function(d) { wrapText(d3.select(this), 80); });
+
+
+
+
+node.append("text")
+    .text(d => d.name)
+    .attr("x", 15)
+    .attr("y", 5)
+    .each(function(d) { wrapText(d3.select(this), 80); })
+    .attr("class", d => {
+        console.log(d.id, "->", d.color, "->", ["criminal4", "trend", "law", "overdose"].includes(d.id) ? "black-text" : 
+                  d.color === "#ff7f0e" ? "orange" : "");
+        return ["criminal4", "trend", "law", "overdose"].includes(d.id) ? "black-text" : 
+               d.color === "#ff7f0e" ? "orange" : "";
+    })
+    .on("click", (event, d) => {
+        if (d.url && !["criminal4", "trend", "law", "overdose"].includes(d.id) && d.color !== "#ff7f0e") {
+            window.open(d.url, "_blank");
+        }
+    });
+
+
+
+        simulation.on("tick", () => {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+            
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+        
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    </script>
+</body>
+</html>

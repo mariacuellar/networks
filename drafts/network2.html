@@ -1,0 +1,125 @@
+x<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        .node {
+            cursor: pointer;
+        }
+        .node text {
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            display: block;
+            fill: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div id="graph"></div>
+    <script>
+        const width = 1000, height = 800;
+        const svg = d3.select("#graph").append("svg").attr("width", width).attr("height", height);
+        
+        const data = {
+            nodes: [
+                { id: "center", name: "Maria Cuellar's Research", url: "https://example.com/research", size: 20, color: "#ff7f0e" },
+                { id: "causal", name: "Causal Inference in the Law", url: "https://example.com/causal" },
+                { id: "forensic", name: "Forensic Science", url: "https://example.com/forensic" },
+                { id: "criminal", name: "Criminal Justice and Public Health", url: "https://example.com/criminal" },
+                { id: "forensic_stats", name: "Forensic Statistics", url: "https://example.com/forensic_stats" },
+                { id: "statistical", name: "Statistical Reviews of Current Methods", url: "https://example.com/statistical" },
+                { id: "methods", name: "Development of New Methods", url: "https://example.com/methods" },
+                { id: "contextual", name: "Contextual Bias", url: "https://example.com/contextual" },
+                { id: "causal1", name: "Causes of effects and effects of causes", url: "https://example.com/causal1" },
+                { id: "causal2", name: "Estimator for the probability of causation with application to water in Kenya", url: "https://example.com/causal2" },
+                { id: "causal3", name: "Mediated probabilities of causation", url: "https://example.com/causal3" },
+                { id: "causal4", name: "Causal problems with Shaken Baby Syndrome/Abusive Head Trauma", url: "https://example.com/causal4" },
+                { id: "causal5", name: "Discussion of an evaluation of a pretrial public safety assessment", url: "https://example.com/causal5" }
+            ],
+            links: [
+                { source: "center", target: "causal" },
+                { source: "center", target: "forensic" },
+                { source: "center", target: "criminal" },
+                { source: "forensic", target: "forensic_stats" },
+                { source: "forensic", target: "statistical" },
+                { source: "forensic", target: "methods" },
+                { source: "statistical", target: "contextual" },
+                { source: "causal", target: "causal1" },
+                { source: "causal", target: "causal2" },
+                { source: "causal", target: "causal3" },
+                { source: "causal", target: "causal4" },
+                { source: "causal", target: "causal5" }
+            ]
+        };
+        
+        const simulation = d3.forceSimulation(data.nodes)
+            .force("link", d3.forceLink(data.links).id(d => d.id).distance(120))
+            .force("charge", d3.forceManyBody().strength(-400))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(50));
+        
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(data.links)
+            .enter().append("line")
+            .attr("class", "link");
+        
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(data.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+        
+        node.append("circle")
+            .attr("r", d => d.size || 10)
+            .attr("fill", d => d.color || "#1f77b4");
+        
+        node.append("text")
+            .text(d => d.name)
+            .attr("x", 15)
+            .attr("y", 5)
+            .on("click", (event, d) => {
+                if (d.url) {
+                    window.open(d.url, "_blank");
+                }
+            });
+        
+        simulation.on("tick", () => {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+            
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+        
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    </script>
+</body>
+</html>

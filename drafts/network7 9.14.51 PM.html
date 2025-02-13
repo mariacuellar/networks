@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        .node {
+            cursor: pointer;
+        }
+        .node text {
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            display: block;
+            fill: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .node text.orange {
+            fill: black;
+            text-decoration: none;
+            cursor: default;
+        }
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div id="graph"></div>
+    <script>
+        const width = 1000, height = 800;
+        const svg = d3.select("#graph").append("svg").attr("width", width).attr("height", height);
+        
+        const data = {
+            nodes: [
+                { id: "center", name: "Maria Cuellar's Research", size: 20, color: "#ff7f0e" },
+                { id: "criminal", name: "Criminal Justice and Public Health", color: "#ff7f0e" },
+                { id: "trend", name: "Trends in self-reporting of marijuana consumption in the US", url: "#" },
+                { id: "law", name: "Re-examining the law of crime concentration", url: "#" },
+                { id: "overdose", name: "Evaluation of an overdose awareness program in Philadelphia libraries", url: "#" },
+                { id: "covid", name: "The effect of Covid-19 lockdowns on crime in Bogota, Colombia", url: "#" }
+            ],
+            links: [
+                { source: "criminal", target: "trend" },
+                { source: "criminal", target: "law" },
+                { source: "criminal", target: "overdose" },
+                { source: "criminal", target: "covid" }
+            ]
+        };
+        
+        const simulation = d3.forceSimulation(data.nodes)
+            .force("link", d3.forceLink(data.links).id(d => d.id).distance(120))
+            .force("charge", d3.forceManyBody().strength(-400))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(50));
+        
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(data.links)
+            .enter().append("line")
+            .attr("class", "link");
+        
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(data.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+        
+        node.append("circle")
+            .attr("r", d => d.size || 10)
+            .attr("fill", d => d.color || "#1f77b4");
+        
+        node.append("text")
+            .text(d => d.name)
+            .attr("x", 15)
+            .attr("y", 5)
+            .attr("class", d => d.color === "#ff7f0e" ? "orange" : "")
+            .on("click", (event, d) => {
+                if (d.url) {
+                    window.open(d.url, "_blank");
+                }
+            });
+        
+        simulation.on("tick", () => {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+            
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+        
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    </script>
+</body>
+</html>
