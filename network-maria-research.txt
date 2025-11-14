@@ -71,7 +71,7 @@ function wrapText(text, width) {
 
         const data = {
             nodes: [
-	{"id":"center","name":"Maria Cuellar's research", "size":20,"color":"#ff7f0e","index":0,"x":743.8322414684274,"y":516.499979880182,"vy":-0.0014931640572415441,"vx":0.0003557728360636476,"fx":null,"fy":null},
+	{"id":"center","name":"Maria Cuellar research", "size":20,"color":"#ff7f0e","index":0,"x":743.8322414684274,"y":516.499979880182,"vy":-0.0014931640572415441,"vx":0.0003557728360636476,"fx":null,"fy":null},
 	{"id":"causal","name":"Causal inference in the law","color":"#ff7f0e","index":1,"x":559.5808609093826,"y":327.0159492647304,"vy":-0.001757167088093106,"vx":0.0029620178851670004},
 	{"id":"forensic","name":"Forensic science","color":"#ff7f0e","index":2,"x":778.9783546376691,"y":868.257275800595,"vy":-0.0008181431603066045,"vx":-0.0011999969873185488},
 	{"id":"criminal","name":"Criminal justice and public health", "color":"#ff7f0e","index":3,"x":905.6696688485551,"y":337.7440830913089,"vy":-0.002011040904804706,"vx":-0.00036323611263233186,"fx":null,"fy":null},
@@ -103,7 +103,7 @@ function wrapText(text, width) {
 	{"id":"forensic_reviews4","name":"Blind testing toxicology","url":"https://pubmed.ncbi.nlm.nih.gov/31424073/","index":31,"x":1210.593021162951,"y":967.2058939850334,"vy":-0.0011190085942023986,"vx":-0.00357875555857756},
 	{"id":"forensic_reviews5","name":"Human vs. machine","url":"https://www.sciencedirect.com/science/article/pii/S2589871X22000687","index":32,"x":1118.54923681637,"y":1041.8210665935055,"vy":-0.0012085436735522767,"vx":-0.002587782443640379},
 	{"id":"forensic_reviews6","name":"Formalization of contextual bias","url":"https://academic.oup.com/jrsssa/article/185/Supplement_2/S620/7069513","index":33,"x":1205.4571009306637,"y":850.3208798461203,"vy":-0.0010191343529690736,"vx":-0.003740085108059007},
-	{"id":"forensic_reviews7","name":"Facial recognition (in progress)"},
+	{"id":"forensic_reviews7","name":"Facial recognition","url":"https://arxiv.org/abs/2505.14320","x":1205.4571009306637,"y":850.3208798461203,"vy":-0.0010191343529690736,"vx":-0.003740085108059007},
 	{"id":"forensic_reviews8","name":"Fingerprint black-box studies (in progress)"}
 
             ],
@@ -181,12 +181,12 @@ node.append("text")
     .attr("y", 5)
     .attr("class", d => {
         let classes = [];
-        if (["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id)) classes.push("black-text");
+        if (["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews8"].includes(d.id)) classes.push("black-text");
         if (d.color === "#ff7f0e") classes.push("orange");
         return classes.join(" "); // Ensures multiple classes are preserved
     })
     .on("click", (event, d) => {
-        if (d.url && !["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id) && d.color !== "#ff7f0e") {
+        if (d.url && !["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews8"].includes(d.id) && d.color !== "#ff7f0e") {
             window.open(d.url, "_blank");
         }
     })
@@ -199,13 +199,13 @@ node.append("text")
     .attr("y", 5)
     .each(function(d) { wrapText(d3.select(this), 80); })
     .attr("class", d => {
-        console.log(d.id, "->", d.color, "->", ["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id) ? "black-text" : 
+        console.log(d.id, "->", d.color, "->", ["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews8"].includes(d.id) ? "black-text" : 
                   d.color === "#ff7f0e" ? "orange" : "");
-        return ["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id) ? "black-text" : 
+        return ["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews8"].includes(d.id) ? "black-text" : 
                d.color === "#ff7f0e" ? "orange" : "";
     })
     .on("click", (event, d) => {
-        if (d.url && !["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id) && d.color !== "#ff7f0e") {
+        if (d.url && !["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews8"].includes(d.id) && d.color !== "#ff7f0e") {
             window.open(d.url, "_blank");
         }
     });

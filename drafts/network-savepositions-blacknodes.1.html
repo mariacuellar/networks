@@ -173,15 +173,38 @@ node.append("text")
     .text(d => d.name)
     .attr("x", 15)
     .attr("y", 5)
-.attr("class", d => 
-        ["criminal4", "methods3", "methods4"].includes(d.id) ? "black-text" :  // Add more IDs here
-        d.color === "#ff7f0e" ? "orange" : "")
+    .attr("class", d => {
+        let classes = [];
+        if (["criminal4", "methods3", "methods4"].includes(d.id)) classes.push("black-text");
+        if (d.color === "#ff7f0e") classes.push("orange");
+        return classes.join(" "); // Ensures multiple classes are preserved
+    })
     .on("click", (event, d) => {
-        if (d.url && d.id !== "criminal4" && d.color !== "#ff7f0e") {
+        if (d.url && !["criminal4", "methods3", "methods4"].includes(d.id) && d.color !== "#ff7f0e") {
             window.open(d.url, "_blank");
         }
     })
-    .each(function(d) { wrapText(d3.select(this), 80); }); 
+    .each(function(d) { wrapText(d3.select(this), 80); });
+
+
+node.append("text")
+    .text(d => d.name)
+    .attr("x", 15)
+    .attr("y", 5)
+    .each(function(d) { wrapText(d3.select(this), 80); })
+    .attr("class", d => {
+        console.log(d.id, "->", d.color, "->", ["criminal4", "forensic_methods3", "forensic_methods4"].includes(d.id) ? "black-text" : 
+                  d.color === "#ff7f0e" ? "orange" : "");
+        return ["criminal4", "forensic_methods3", "forensic_methods4"].includes(d.id) ? "black-text" : 
+               d.color === "#ff7f0e" ? "orange" : "";
+    })
+    .on("click", (event, d) => {
+        if (d.url && !["criminal4", "forensic_methods3", "forensic_methods4"].includes(d.id) && d.color !== "#ff7f0e") {
+            window.open(d.url, "_blank");
+        }
+    });
+
+
 
         simulation.on("tick", () => {
             link.attr("x1", d => d.source.x)

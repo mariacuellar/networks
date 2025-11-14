@@ -29,7 +29,7 @@
 <body>
     <div id="graph"></div>
     <script>
-        const width = 1500, height = 1500;
+        const width = 1000, height = 1000;
         const svg = d3.select("#graph").append("svg").attr("width", width).attr("height", height);
         
 function wrapText(text, width) {
@@ -103,11 +103,12 @@ function wrapText(text, width) {
             ]
         };
         
+
 	const simulation = d3.forceSimulation(data.nodes)
-    	    .force("link", d3.forceLink(data.links).id(d => d.id).distance(120))  // Reduced distance
-            .force("charge", d3.forceManyBody().strength(-400))  // Less repulsion
-            .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(30));  // Closer nodes
+    	    .force("link", d3.forceLink(data.links).id(d => d.id).distance(120))
+	    .force("charge", d3.forceManyBody().strength(d => d.color === "#ff7f0e" ? -50 : -400)) // Less repulsion for orange nodes
+    	    .force("center", d3.forceCenter(width / 2, height / 2))
+    	    .force("collision", d3.forceCollide().radius(30));
 
 
         const link = svg.append("g")

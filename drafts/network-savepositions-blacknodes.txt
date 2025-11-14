@@ -20,9 +20,10 @@
             cursor: default;
         }
 .black-text {
-    fill: black !important; /* Force black text */
+    fill: black !important;  /* Forces black text */
     text-decoration: none;
-    cursor: default;
+    cursor: default !important;  /* Makes it look non-clickable */
+    pointer-events: none;  /* Completely disables interaction */
 }
         .link {
             stroke: #999;
@@ -99,7 +100,9 @@ function wrapText(text, width) {
 	{"id":"forensic_reviews2","name":"Firearms black-box studies","url":"https://academic.oup.com/lpr/article/23/1/mgae015/7917599?searchresult=1&login=false","index":29,"x":1173.934060959685,"y":1014.70453224729,"vy":-0.0009957339337459028,"vx":-0.003419030431770038},{"id":"forensic_reviews3","name":"Public beliefs","url":"https://pubmed.ncbi.nlm.nih.gov/32381243/","index":30,"x":1158.0556576620365,"y":800.7539051603869,"vy":-0.0013204737955335268,"vx":-0.00400900492667362},	
 	{"id":"forensic_reviews4","name":"Blind testing toxicology","url":"https://pubmed.ncbi.nlm.nih.gov/31424073/","index":31,"x":1210.593021162951,"y":967.2058939850334,"vy":-0.0011190085942023986,"vx":-0.00357875555857756},
 	{"id":"forensic_reviews5","name":"Human vs. machine","url":"https://www.sciencedirect.com/science/article/pii/S2589871X22000687","index":32,"x":1118.54923681637,"y":1041.8210665935055,"vy":-0.0012085436735522767,"vx":-0.002587782443640379},
-	{"id":"forensic_reviews6","name":"Formalization of contextual bias","url":"https://academic.oup.com/jrsssa/article/185/Supplement_2/S620/7069513","index":33,"x":1205.4571009306637,"y":850.3208798461203,"vy":-0.0010191343529690736,"vx":-0.003740085108059007}
+	{"id":"forensic_reviews6","name":"Formalization of contextual bias","url":"https://academic.oup.com/jrsssa/article/185/Supplement_2/S620/7069513","index":33,"x":1205.4571009306637,"y":850.3208798461203,"vy":-0.0010191343529690736,"vx":-0.003740085108059007},
+	{"id":"forensic_reviews7","name":"Facial recognition"},
+	{"id":"forensic_reviews8","name":"Fingerprint black-box studies"}
 
             ],
             links: [
@@ -135,7 +138,9 @@ function wrapText(text, width) {
                 { source: "forensic_reviews", target: "forensic_reviews3" },
                 { source: "forensic_reviews", target: "forensic_reviews4" },
                 { source: "forensic_reviews", target: "forensic_reviews5" },
-                { source: "forensic_reviews", target: "forensic_reviews6" }
+                { source: "forensic_reviews", target: "forensic_reviews6" },
+                { source: "forensic_reviews", target: "forensic_reviews7" },
+                { source: "forensic_reviews", target: "forensic_reviews8" }
 
             ]
         };
@@ -172,15 +177,38 @@ node.append("text")
     .text(d => d.name)
     .attr("x", 15)
     .attr("y", 5)
-    .attr("class", d => 
-        d.id === "criminal4" ? "black-text" : 
-        d.color === "#ff7f0e" ? "orange" : "")
+    .attr("class", d => {
+        let classes = [];
+        if (["criminal4", "methods3", "methods4"].includes(d.id)) classes.push("black-text");
+        if (d.color === "#ff7f0e") classes.push("orange");
+        return classes.join(" "); // Ensures multiple classes are preserved
+    })
     .on("click", (event, d) => {
-        if (d.url && d.color !== "#ff7f0e") {
+        if (d.url && !["criminal4", "methods3", "methods4"].includes(d.id) && d.color !== "#ff7f0e") {
             window.open(d.url, "_blank");
         }
     })
-    .each(function(d) { wrapText(d3.select(this), 80); }); 
+    .each(function(d) { wrapText(d3.select(this), 80); });
+
+
+node.append("text")
+    .text(d => d.name)
+    .attr("x", 15)
+    .attr("y", 5)
+    .each(function(d) { wrapText(d3.select(this), 80); })
+    .attr("class", d => {
+        console.log(d.id, "->", d.color, "->", ["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id) ? "black-text" : 
+                  d.color === "#ff7f0e" ? "orange" : "");
+        return ["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id) ? "black-text" : 
+               d.color === "#ff7f0e" ? "orange" : "";
+    })
+    .on("click", (event, d) => {
+        if (d.url && !["criminal4", "forensic_methods3", "forensic_methods4", "forensic_reviews7", "forensic_reviews8"].includes(d.id) && d.color !== "#ff7f0e") {
+            window.open(d.url, "_blank");
+        }
+    });
+
+
 
         simulation.on("tick", () => {
             link.attr("x1", d => d.source.x)
