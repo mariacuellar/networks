@@ -87,7 +87,7 @@ function wrapText(text, width) {
 	{"id":"criminal2","name":"Law of crime concentration","url":"https://journals.sagepub.com/doi/abs/10.1177/0022427820984213?journalCode=jrca","index":13,"x":951.7515845431031,"y":203.142522851665,"vy":-0.001767055081572675,"vx":0.0015997512797604411},
 	{"id":"criminal3","name":"Overdose awareness","url":"https://pubmed.ncbi.nlm.nih.gov/32662281/","index":14,"x":1013.1863611806841,"y":243.47297429068013,"vy":-0.0008464297249700842,"vx":0.000841393047502599},
 	{"id":"criminal4","name":"Covid lockdowns on crime (in progress)","index":15,"x":872.0510455024894,"y":204.32525253530423,"vy":-0.0028969876636334058,"vx":0.0018731544087609772},
-	{"id":"forensic_stats1","name":"Risks of exclusions","url":"https://arxiv.org/abs/2412.05398","index":16,"x":490.0170439346773,"y":1053.257270643954,"vy":0.004818005271498797,"vx":-0.004470948238485577},
+	{"id":"forensic_stats1","name":"Risks of exclusions","url":"https://www.sciencedirect.com/science/article/pii/S2589871X25000506","index":16,"x":490.0170439346773,"y":1053.257270643954,"vy":0.004818005271498797,"vx":-0.004470948238485577},
 	{"id":"forensic_stats2","name":"Prosecutor's fallacy","url":"https://arxiv.org/abs/2502.03217","index":17,"x":325.9503286220691,"y":955.110564002398,"vy":-0.0008154319748202857,"vx":0.0016779176482585219},
 	{"id":"forensic_stats3","name":"Fingerprints birthday paradox","url":"https://arxiv.org/abs/2412.13135","index":18,"x":511.4291809435833,"y":799.3293306316423,"vy":-0.001584767594136881,"vx":-0.007374028658046573},
 	{"id":"forensic_stats4","name":"Guyll et al. reasoning","url":"https://www.pnas.org/doi/10.1073/pnas.2315431121","index":19,"x":409.0777756869524,"y":1049.3176267058777,"vy":0.0006214917127170938,"vx":-0.003442415853280766},
