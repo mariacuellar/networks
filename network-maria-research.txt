@@ -103,7 +103,7 @@ function wrapText(text, width) {
 	{"id":"forensic_reviews4","name":"Blind testing toxicology","url":"https://pubmed.ncbi.nlm.nih.gov/31424073/","index":31,"x":1210.593021162951,"y":967.2058939850334,"vy":-0.0011190085942023986,"vx":-0.00357875555857756},
 	{"id":"forensic_reviews5","name":"Human vs. machine","url":"https://www.sciencedirect.com/science/article/pii/S2589871X22000687","index":32,"x":1118.54923681637,"y":1041.8210665935055,"vy":-0.0012085436735522767,"vx":-0.002587782443640379},
 	{"id":"forensic_reviews6","name":"Formalization of contextual bias","url":"https://academic.oup.com/jrsssa/article/185/Supplement_2/S620/7069513","index":33,"x":1205.4571009306637,"y":850.3208798461203,"vy":-0.0010191343529690736,"vx":-0.003740085108059007},
-	{"id":"forensic_reviews7","name":"Facial recognition","url":"https://arxiv.org/abs/2505.14320","x":1205.4571009306637,"y":850.3208798461203,"vy":-0.0010191343529690736,"vx":-0.003740085108059007},
+	{"id":"forensic_reviews7","name":"Facial recognition","url":"https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0353793","x":1205.4571009306637,"y":850.3208798461203,"vy":-0.0010191343529690736,"vx":-0.003740085108059007},
 	{"id":"forensic_reviews8","name":"Fingerprint black-box studies (in progress)"}
 
             ],
